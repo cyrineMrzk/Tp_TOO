@@ -1,4 +1,6 @@
 package bank;
+import bank.tx.Transaction;
+import bank.tx.TransactionType;
 
 public class CreditAccount extends Account {
     private final double creditLimit;
@@ -14,5 +16,13 @@ public class CreditAccount extends Account {
             throw new BusinessRuleViolation("withdraw amount must be > 0 and <= balance + creditLimit");
         }
         balance -= amount;
+        recordTransaction(new Transaction(TransactionType.WITHDRAW, amount, balance));
+      // si le compte passe en négatif alrs ajouter un frais (coût supplémentaire quand le compte est à découvert)
+    if (balance < 0) {
+        double fee = 5.0;  //exemple de frais 5.0 unités
+        balance -= fee;
+        recordTransaction(new Transaction(TransactionType.FEE, fee, balance));
     }
+    }
+     
 }

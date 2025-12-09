@@ -1,0 +1,7 @@
+1 que se passe t il si le retrait echoue on a fait une Verification avant toute modification du coup notre withdraw commence tjrs par verifier les preconditions montant >0 montant <= solde alors si une precondition echoue une exception BusinessRuleViolation est levee immediatement et le solde du compte n est pas modifie
+
+2 que se passe t il si le depot echoue le depot verifie aussi les preconditions avant de modifier le solde exemple montant >0 si ca echoue exception BusinessRuleViolation levee solde pas modifie aucune transaction enregistre
+
+3 comment garantir qu aucune transaction incorrecte n est enregistree on verifie toutes les preconditions avant de toucher au solde et on cree les transactions (TRANSFER_OUT TRANSFER_IN WITHDRAW DEPOSIT) qu apres la mise a jour du solde si erreur rien est ajoute
+
+4 ou placer la logique metier dans Bank ou dans les comptes logique propre a un compte dans Account ou ses sous classes ex solde minimum limite de credit retrait depot valide interest logique qui touche plusieurs comptes dans Bank ex transfert verification que les 2 comptes existent atomicite
