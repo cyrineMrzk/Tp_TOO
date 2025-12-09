@@ -9,20 +9,33 @@ public class CreditAccount extends Account {
         super(id, initial);
         this.creditLimit = creditLimit;
     }
-
-    @Override
-    public void withdraw(double amount) {
-        if (amount <= 0 || amount > balance + creditLimit) {
-            throw new BusinessRuleViolation("withdraw amount must be > 0 and <= balance + creditLimit");
-        }
-        balance -= amount;
-        recordTransaction(new Transaction(TransactionType.WITHDRAW, amount, balance));
-      // si le compte passe en négatif alrs ajouter un frais (coût supplémentaire quand le compte est à découvert)
-    if (balance < 0) {
-        double fee = 5.0;  //exemple de frais 5.0 unités
+@Override
+public void withdraw(double amount) {
+    if (amount <= 0) {
+        throw new BusinessRuleViolation("withdraw amount must be > 0 and <= balance + creditLimit");
+    }
+    
+    double potentialBalance = balance - amount;
+    
+    // Determine if fee applies
+    double fee = 0.0;
+    if (potentialBalance < 0) {
+        fee = 5.0;
+    }
+    
+    // Check if withdrawal + potential fee exceeds limit (use <= instead of <)
+    if (potentialBalance - fee < -creditLimit) {
+        throw new BusinessRuleViolation("withdraw amount must be > 0 and <= balance + creditLimit");
+    }
+    
+    // Apply withdraw
+    balance = potentialBalance;
+    recordTransaction(new Transaction(TransactionType.WITHDRAW, amount, balance));
+    
+    // Apply fee if needed
+    if (fee > 0) {
         balance -= fee;
         recordTransaction(new Transaction(TransactionType.FEE, fee, balance));
     }
-    }
-     
+}
 }

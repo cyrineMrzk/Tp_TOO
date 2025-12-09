@@ -27,19 +27,14 @@ public class SavingsAccount extends Account {
     }
 
     @Override
-    public void withdraw(double amount) {
-         if (amount <= 0) {
-        throw new BusinessRuleViolation("montant invalide");
+public void withdraw(double amount) {
+    if (amount <= 0 || amount > balance) {
+        throw new BusinessRuleViolation("withdraw amount must be > 0 and <= balance");
     }
-       if (amount > balance) {
-        throw new BusinessRuleViolation("insufficient balance");
-    }
-         balance -= amount;
-         recordTransaction(new Transaction(
-        TransactionType.WITHDRAW,
-        amount,
-        balance
-    )); }
+    balance -= amount;
+    recordTransaction(new Transaction(TransactionType.WITHDRAW, amount, balance));
+}
+
     //bonus question : resume des interets cumules 
     public double getTotalInterestEarned() {
         double totalInterest = 0.0;
