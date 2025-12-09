@@ -76,5 +76,8 @@ public abstract class Account {
     sorted.sort((t1, t2) -> t1.getTimestamp().compareTo(t2.getTimestamp()));
     return sorted;
 }
+public void setBalance(double balance) {
+    this.balance = balance;
+}
 
 }
