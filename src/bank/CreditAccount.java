@@ -1,41 +1,52 @@
 package bank;
+
 import bank.tx.Transaction;
 import bank.tx.TransactionType;
 
 public class CreditAccount extends Account {
     private final double creditLimit;
 
-    public CreditAccount(String id, double initial, double creditLimit) {
-        super(id, initial);
+    public CreditAccount(String accountNumber, double initial, double creditLimit) {
+        super(accountNumber, initial);
         this.creditLimit = creditLimit;
     }
-@Override
-public void withdraw(double amount) {
-    if (amount <= 0) {
-        throw new BusinessRuleViolation("withdraw amount must be > 0 and <= balance + creditLimit");
+
+    public double getCreditLimit() {
+        return creditLimit;
+    }
+
+    // ============================================
+    // TEMPLATE METHOD PATTERN : Hook Methods
+    // ============================================
+    
+    @Override
+    protected void checkSpecificRules(double amount) {
+        // Calculer le solde après retrait
+        double potentialBalance = balance - amount;
+        
+        // Calculer les frais potentiels selon la stratégie (Strategy Pattern)
+        double fee = 0.0;
+        if (potentialBalance < 0) {
+            fee = getFeePolicy().computeFee(amount);
+        }
+        
+        // Vérifier que le découvert + frais ne dépasse pas la limite de crédit
+        if (potentialBalance - fee < -creditLimit) {
+            throw new BusinessRuleViolation(
+                "withdraw amount must be > 0 and <= balance + creditLimit");
+        }
     }
     
-    double potentialBalance = balance - amount;
-    
-    // Determine if fee applies
-    double fee = 0.0;
-    if (potentialBalance < 0) {
-        fee = 5.0;
+    @Override
+    protected void applyWithdraw(double amount, double fee) {
+        // Appliquer le retrait
+        balance -= amount;
+        recordTransaction(new Transaction(TransactionType.WITHDRAW, amount, balance));
+        
+        // Appliquer les frais si nécessaire
+        if (fee > 0) {
+            balance -= fee;
+            recordTransaction(new Transaction(TransactionType.FEE, fee, balance));
+        }
     }
-    
-    // Check if withdrawal + potential fee exceeds limit (use <= instead of <)
-    if (potentialBalance - fee < -creditLimit) {
-        throw new BusinessRuleViolation("withdraw amount must be > 0 and <= balance + creditLimit");
-    }
-    
-    // Apply withdraw
-    balance = potentialBalance;
-    recordTransaction(new Transaction(TransactionType.WITHDRAW, amount, balance));
-    
-    // Apply fee if needed
-    if (fee > 0) {
-        balance -= fee;
-        recordTransaction(new Transaction(TransactionType.FEE, fee, balance));
-    }
-}
 }

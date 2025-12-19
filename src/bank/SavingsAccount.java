@@ -1,44 +1,71 @@
 package bank;
+
 import bank.tx.Transaction;
 import bank.tx.TransactionType;
+
 public class SavingsAccount extends Account {
     private final double interestRate;
 
-    public SavingsAccount(String id, double initial, double interestRate) {
-        super(id, initial);
+    public SavingsAccount(String accountNumber, double initial, double interestRate) {
+        super(accountNumber, initial);
         this.interestRate = interestRate;
     }
 
+    // ============================================
+    // TEMPLATE METHOD PATTERN : Hook Methods
+    // ============================================
+    
+    @Override
+    protected void checkSpecificRules(double amount) {
+        // Règle spécifique : pas de découvert autorisé
+        if (balance - amount < 0) {
+            throw new BusinessRuleViolation(
+                "withdraw amount must be > 0 and <= balance");
+        }
+    }
+    
+    @Override
+    protected void applyWithdraw(double amount, double fee) {
+        // Appliquer le retrait
+        balance -= amount;
+        recordTransaction(new Transaction(TransactionType.WITHDRAW, amount, balance));
+        
+        // Appliquer les frais si nécessaire
+        if (fee > 0) {
+            balance -= fee;
+            recordTransaction(new Transaction(TransactionType.FEE, fee, balance));
+        }
+    }
+
+    // ============================================
+    // Méthode spécifique : Intérêts
+    // ============================================
+    
     public void applyInterest() {
         double interest = balance * interestRate;
-        double newBalance = balance + interest; 
+        
         if (interest < 0) {
             throw new BusinessRuleViolation("Interest cannot be negative");
         }
+        
         balance += interest;
+        
         Transaction tx = new Transaction(
-                TransactionType.INTEREST,
-                interest,
-                newBalance
+            TransactionType.INTEREST,
+            interest,
+            balance
         );
-
-       recordTransaction(tx);
-
+        
+        recordTransaction(tx);
     }
 
-    @Override
-public void withdraw(double amount) {
-    if (amount <= 0 || amount > balance) {
-        throw new BusinessRuleViolation("withdraw amount must be > 0 and <= balance");
-    }
-    balance -= amount;
-    recordTransaction(new Transaction(TransactionType.WITHDRAW, amount, balance));
-}
-
-    //bonus question : resume des interets cumules 
+    // ============================================
+    // Bonus : Résumé des intérêts cumulés
+    // ============================================
+    
     public double getTotalInterestEarned() {
         double totalInterest = 0.0;
-        for (Transaction tx : history) {
+        for (Transaction tx : history()) {
             if (tx.getType() == TransactionType.INTEREST) {
                 totalInterest += tx.getAmount();
             }
@@ -46,4 +73,7 @@ public void withdraw(double amount) {
         return totalInterest;
     }
     
+    public double getInterestRate() {
+        return interestRate;
+    }
 }
