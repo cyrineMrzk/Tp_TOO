@@ -176,4 +176,6 @@ public class ObserverPatternTest {
         // Aucune notification ne doit avoir été envoyée
         assertEquals(0, observer.count);
     }
+
+    
 }
