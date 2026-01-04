@@ -1,8 +1,13 @@
 // test/bank/StrategyPatternTest.java
 package bank;
 
-import bank.fees.*;
-import bank.tx.TransactionType;
+import bank.domain.Account;
+import bank.domain.CreditAccount;
+import bank.domain.SavingsAccount;
+import bank.domain.TransactionType;
+import bank.domain.fees.*;
+import bank.errors.BusinessRuleViolation;
+
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 

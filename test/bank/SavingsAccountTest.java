@@ -1,5 +1,9 @@
 package bank;
-import bank.tx.*;
+import bank.domain.Account;
+import bank.domain.SavingsAccount;
+import bank.domain.TransactionType;
+import bank.errors.BusinessRuleViolation;
+
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 

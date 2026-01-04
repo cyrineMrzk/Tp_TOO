@@ -1,8 +1,13 @@
 // test/bank/ObserverPatternTest.java
 package bank;
 
-import bank.observer.*;
-import bank.tx.*;
+import bank.domain.Account;
+import bank.domain.SavingsAccount;
+import bank.domain.Transaction;
+import bank.domain.TransactionType;
+import bank.domain.observer.*;
+import bank.errors.BusinessRuleViolation;
+
 import org.junit.jupiter.api.*;
 import java.io.IOException;
 import java.nio.file.*;
@@ -41,19 +46,39 @@ public class ObserverPatternTest {
     }
     
     @Test
-    void testAuditServiceObservesDeposit() throws IOException {
-        Account acc = new SavingsAccount("SA-002", 1000.0, 0.02);
-        AuditService audit = new AuditService();
-        
-        acc.addObserver(audit);
-        acc.deposit(200.0);
-        
-        List<String> lines = Files.readAllLines(AUDIT_FILE);
-        
-        assertEquals(1, lines.size());
-        assertTrue(lines.get(0).contains("DEPOSIT"));
-        assertTrue(lines.get(0).contains("200.00"));
-    }
+void testAuditServiceObservesDeposit() throws IOException {
+    Account acc = new SavingsAccount("SA-002", 1000.0, 0.02);
+    AuditService audit = new AuditService();
+
+    // Ajouter l'observateur
+    acc.addObserver(audit);
+    acc.deposit(200.0);
+
+    // Vérifie que le fichier existe
+    assertTrue(Files.exists(AUDIT_FILE), "Audit file should exist after deposit");
+
+    // Lecture des lignes
+    List<String> lines = Files.readAllLines(AUDIT_FILE);
+
+    // Il doit y avoir exactement une ligne
+    assertEquals(1, lines.size(), "Audit file should contain exactly one line");
+
+    String line = lines.get(0);
+
+    // Vérifie que la ligne contient DEPOSIT et le bon ID
+    assertTrue(line.contains("DEPOSIT"), "Line should contain DEPOSIT");
+    assertTrue(line.contains("SA-002"), "Line should contain account ID SA-002");
+
+    // Vérifie que le montant est correct en utilisant Locale.US pour le format
+    String expectedAmount = String.format(java.util.Locale.US, "%.2f", 200.0);
+    assertTrue(line.contains(expectedAmount), 
+               "Line should contain the correct amount " + expectedAmount);
+
+    // Vérifie le format du timestamp au début de la ligne
+    assertTrue(line.matches("^\\[\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\].*"), 
+               "Line should start with timestamp");
+}
+
     
     @Test
     void testMultipleObservers() {
@@ -136,7 +161,7 @@ public class ObserverPatternTest {
     @Test
     void testObserverNotifiedForFeeTransaction() throws IOException {
         Account acc = new SavingsAccount("SA-006", 1000.0, 0.02);
-        acc.setFeePolicy(new bank.fees.FixedFeePolicy(5.0));
+        acc.setFeePolicy(new bank.domain.fees.FixedFeePolicy(5.0));
         
         AuditService audit = new AuditService();
         acc.addObserver(audit);

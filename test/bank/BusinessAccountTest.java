@@ -1,5 +1,8 @@
 package bank;
-import bank.tx.*;
+import bank.domain.BusinessAccount;
+import bank.domain.TransactionType;
+import bank.errors.BusinessRuleViolation;
+
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -7,7 +10,7 @@ class BusinessAccountTest {
 
     @Test
     void testWithdraw() {
-        BusinessAccount acc = new BusinessAccount("BA-1", 100.0, 500.0, 0.05);
+        BusinessAccount acc = new BusinessAccount("BA-1", 100.0, 500.0, 0.05, null);
 
         // Retrait nominal
         acc.withdraw(50.0);
@@ -25,13 +28,13 @@ class BusinessAccountTest {
     @Test
     void testApplyInterest() {
         // Cas A : solde positif
-        BusinessAccount acc = new BusinessAccount("BA-2", 200.0, 500.0, 0.05);
+        BusinessAccount acc = new BusinessAccount("BA-2", 200.0, 500.0, 0.05, null);
         acc.applyInterest();
         assertEquals(210.0, acc.getBalance(), 0.001);
         assertEquals(TransactionType.INTEREST, acc.history().get(acc.history().size()-1).getType());
 
         // Cas B : solde nul ou négatif
-        BusinessAccount acc2 = new BusinessAccount("BA-3", -100.0, 500.0, 0.05);
+        BusinessAccount acc2 = new BusinessAccount("BA-3", -100.0, 500.0, 0.05, null);
         acc2.applyInterest();
         assertEquals(-100.0, acc2.getBalance(), 0.001);
         assertTrue(acc2.findByType(TransactionType.INTEREST).isEmpty());

@@ -1,6 +1,9 @@
 package bank;
 
 import org.junit.jupiter.api.*;
+
+import bank.infrastructure.Logger;
+
 import java.nio.file.*;
 import java.io.IOException;
 import java.util.List;

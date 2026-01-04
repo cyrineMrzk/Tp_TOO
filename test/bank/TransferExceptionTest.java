@@ -3,6 +3,9 @@ package bank;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import bank.domain.Account;
+import bank.domain.Bank;
+import bank.domain.SavingsAccount;
 import bank.errors.InvalidAmountException;
 import bank.errors.UnknownAccountException;
 import bank.errors.TransferException;
