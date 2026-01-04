@@ -4,3 +4,8 @@
 [2025-12-19 18:54:23] INFO - Withdraw OK: 200,00 from CA-001 (fee: 0,00)
 [2025-12-19 18:54:23] INFO - Deposit OK: 200,00 to SA-003
 [2025-12-19 18:54:23] INFO - Withdraw OK: 50,00 from SA-003 (fee: 0,00)
+[2026-01-04 12:31:27] INFO - Deposit OK: 500,00 to SA-1001
+[2026-01-04 12:31:27] INFO - Withdraw OK: 200,00 from SA-1001 (fee: 0,00)
+[2026-01-04 12:31:27] INFO - Deposit OK: 300,00 to CR-2001
+[2026-01-04 12:31:27] INFO - Withdraw OK: 150,00 from CR-2001 (fee: 0,00)
+[2026-01-04 12:31:27] INFO - Deposit OK: 1000,00 to BA-3001

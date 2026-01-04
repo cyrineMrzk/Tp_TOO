@@ -1,4 +1,5 @@
 package bank;
+
 import bank.errors.InvalidAmountException;
 import bank.errors.UnknownAccountException;
 import bank.errors.TransferException;
@@ -23,6 +24,16 @@ public class Bank {
     // Add an account
     public void addAccount(Account acc) {
         accounts.add(acc);
+    }
+    
+    /**
+     * Retourne tous les comptes de la banque.
+     * Nécessaire pour la persistance.
+     * 
+     * @return Liste de tous les comptes
+     */
+    public List<Account> getAllAccounts() {
+        return new ArrayList<>(accounts); // Copie défensive
     }
 
     // Atomic transfer method

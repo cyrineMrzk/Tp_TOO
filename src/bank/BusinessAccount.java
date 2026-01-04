@@ -6,13 +6,28 @@ import bank.tx.TransactionType;
 public class BusinessAccount extends Account {
     private final double creditLimit;
     private final double interestRate;
+     private String tier;
 
-    public BusinessAccount(String accountNumber, double initial, double creditLimit, double interestRate) {
+    public BusinessAccount(String accountNumber, double initial, double creditLimit, double interestRate, String tier) {
         super(accountNumber, initial);
         this.creditLimit = creditLimit;
         this.interestRate = interestRate;
+        this.tier = tier;
     }
 
+    public BusinessAccount(String accountNumber, double balance, String tier) {
+    this(
+        accountNumber,
+        balance,
+        0.0,      // creditLimit par défaut
+        0.0,      // interestRate par défaut
+        tier
+    );
+}
+
+     public String getTier() {
+        return tier;
+    }
     public double getCreditLimit() {
         return creditLimit;
     }
